@@ -4,7 +4,7 @@
 
 ## デモ
 
-👉 [アプリを開く](https://saki-nya1539.github.io/study-record-tracker/)
+👉 [アプリを開く](https://saki-nya1539.github.io/study-record-tracker/)　URL:https://saki-nya1539.github.io/study-record-tracker/
 
 ## 機能
 
