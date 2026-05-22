@@ -1,0 +1,707 @@
+<<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>📚 学習記録トラッカー</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        min-height: 100vh;
+        padding: 30px 20px;
+        color: #fff;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+      }
+
+      .header p {
+        opacity: 0.5;
+        margin-top: 4px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 18px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: 0.2s;
+      }
+
+      .stat-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        opacity: 0.6;
+        margin-top: 4px;
+      }
+
+      .input-card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(10px);
+        padding: 24px;
+        border-radius: 20px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .input-card h3 {
+        margin-bottom: 16px;
+        font-size: 1.1rem;
+        opacity: 0.8;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        opacity: 0.6;
+        margin-bottom: 4px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.95rem;
+        background: rgba(0, 0, 0, 0.25);
+        color: #fff;
+        outline: none;
+        transition: 0.2s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: rgba(102, 126, 234, 0.5);
+        box-shadow: 0 0 12px rgba(102, 126, 234, 0.15);
+      }
+
+      .form-group select option {
+        background: #1a1a2e;
+        color: #fff;
+      }
+
+      .form-group textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 60px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+      }
+
+      .btn-danger {
+        background: rgba(255, 82, 82, 0.2);
+        color: #ff6b6b;
+        border: 1px solid rgba(255, 82, 82, 0.2);
+      }
+
+      .btn-danger:hover {
+        background: rgba(255, 82, 82, 0.35);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .filter-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-bar select,
+      .filter-bar input {
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.85rem;
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+        outline: none;
+      }
+
+      .filter-bar select option {
+        background: #1a1a2e;
+        color: #fff;
+      }
+
+      .filter-bar input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .filter-bar input:focus {
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+
+      .record-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .record-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 18px 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .record-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+      }
+
+      .record-left {
+        flex: 1;
+      }
+
+      .record-title {
+        font-size: 1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .record-title .subject-tag {
+        font-size: 0.7rem;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-weight: normal;
+      }
+
+      .tag-math { background: rgba(102, 126, 234, 0.3); color: #8899ff; }
+      .tag-english { background: rgba(100, 255, 218, 0.2); color: #64ffda; }
+      .tag-science { background: rgba(255, 183, 77, 0.2); color: #ffb74d; }
+      .tag-japanese { background: rgba(255, 100, 100, 0.2); color: #ff6b6b; }
+      .tag-history { background: rgba(200, 150, 255, 0.2); color: #c896ff; }
+      .tag-programming { background: rgba(100, 200, 255, 0.2); color: #64c8ff; }
+      .tag-other { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); }
+
+      .record-meta {
+        font-size: 0.8rem;
+        opacity: 0.5;
+        margin-top: 4px;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .record-right {
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .record-time {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #64ffda;
+      }
+
+      .record-time-unit {
+        font-size: 0.75rem;
+        opacity: 0.6;
+      }
+
+      .record-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .record-actions button {
+        padding: 4px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: 0.15s;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .record-actions button:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .record-actions .delete-btn:hover {
+        background: rgba(255, 82, 82, 0.3);
+        color: #ff6b6b;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        opacity: 0.4;
+      }
+
+      .empty-state .icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+
+      .empty-state p {
+        font-size: 0.95rem;
+      }
+
+      .footer-status {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 0.75rem;
+        opacity: 0.3;
+        font-family: monospace;
+      }
+
+      @media (max-width: 600px) {
+        body { padding: 16px 12px; }
+        .form-row { flex-direction: column; }
+        .record-card { flex-direction: column; align-items: stretch; }
+        .record-right { text-align: left; display: flex; justify-content: space-between; align-items: center; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📚 学習記録トラッカー</h1>
+        <p>毎日の勉強を記録して、成長を可視化しよう</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalSessions">0</div>
+          <div class="stat-label">総学習回数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalTime">0</div>
+          <div class="stat-label">総学習時間（分）</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="avgTime">0</div>
+          <div class="stat-label">1回あたりの平均（分）</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="todayCount">0</div>
+          <div class="stat-label">今日の学習回数</div>
+        </div>
+      </div>
+
+      <div class="input-card">
+        <h3>✏️ 新しい学習記録</h3>
+        <div class="form-row">
+          <div class="form-group" style="flex:2;">
+            <label>学習内容</label>
+            <input type="text" id="inputTitle" placeholder="例：連立方程式の復習" />
+          </div>
+          <div class="form-group">
+            <label>教科</label>
+            <select id="inputSubject">
+              <option value="数学">📐 数学</option>
+              <option value="英語">📖 英語</option>
+              <option value="理科">🔬 理科</option>
+              <option value="国語">📝 国語</option>
+              <option value="社会">🌍 社会</option>
+              <option value="プログラミング">💻 プログラミング</option>
+              <option value="その他">📌 その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>学習時間（分）</label>
+            <input type="number" id="inputMinutes" placeholder="例：60" min="1" max="1440" />
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label>メモ（任意）</label>
+          <textarea id="inputNote" placeholder="理解度や気づきをメモ…"></textarea>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="addBtn">✅ 記録する</button>
+          <button class="btn btn-secondary" id="clearFormBtn">🗑 クリア</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <select id="filterSubject">
+          <option value="all">📂 すべての教科</option>
+          <option value="数学">📐 数学</option>
+          <option value="英語">📖 英語</option>
+          <option value="理科">🔬 理科</option>
+          <option value="国語">📝 国語</option>
+          <option value="社会">🌍 社会</option>
+          <option value="プログラミング">💻 プログラミング</option>
+          <option value="その他">📌 その他</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="🔍 学習内容を検索..." />
+        <button class="btn btn-danger" id="deleteAllBtn" style="padding: 8px 16px; font-size:0.8rem;">🗑 全削除</button>
+      </div>
+
+      <div class="record-list" id="recordList">
+        <div class="empty-state">
+          <div class="icon">📖</div>
+          <p>まだ学習記録がありません<br />上のフォームから記録を追加しましょう！</p>
+        </div>
+      </div>
+
+      <div class="footer-status">
+        💾 データは localStorage に保存されています
+      </div>
+    </div>
+
+    <script>
+      // DOM参照
+      const inputTitle = document.getElementById("inputTitle");
+      const inputSubject = document.getElementById("inputSubject");
+      const inputMinutes = document.getElementById("inputMinutes");
+      const inputNote = document.getElementById("inputNote");
+      const addBtn = document.getElementById("addBtn");
+      const clearFormBtn = document.getElementById("clearFormBtn");
+      const recordList = document.getElementById("recordList");
+      const filterSubject = document.getElementById("filterSubject");
+      const searchInput = document.getElementById("searchInput");
+      const deleteAllBtn = document.getElementById("deleteAllBtn");
+
+      const totalSessions = document.getElementById("totalSessions");
+      const totalTime = document.getElementById("totalTime");
+      const avgTime = document.getElementById("avgTime");
+      const todayCount = document.getElementById("todayCount");
+
+      // データ管理
+      let records = [];
+
+      function loadData() {
+        try {
+          const saved = localStorage.getItem("studyRecords");
+          if (saved) records = JSON.parse(saved);
+        } catch (e) {
+          records = [];
+        }
+      }
+
+      function saveData() {
+        localStorage.setItem("studyRecords", JSON.stringify(records));
+      }
+
+      function getSubjectTagClass(subject) {
+        const map = {
+          "数学": "tag-math",
+          "英語": "tag-english",
+          "理科": "tag-science",
+          "国語": "tag-japanese",
+          "社会": "tag-history",
+          "プログラミング": "tag-programming",
+          "その他": "tag-other"
+        };
+        return map[subject] || "tag-other";
+      }
+
+      function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        const week = ["日","月","火","水","木","金","土"];
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        const w = week[d.getDay()];
+        const hour = String(d.getHours()).padStart(2, "0");
+        const min = String(d.getMinutes()).padStart(2, "0");
+        return `${month}/${day}(${w}) ${hour}:${min}`;
+      }
+
+      function formatDateShort(dateStr) {
+        const d = new Date(dateStr);
+        return `${d.getMonth()+1}/${d.getDate()}`;
+      }
+
+      function isToday(dateStr) {
+        const d = new Date(dateStr);
+        const now = new Date();
+        return d.getFullYear() === now.getFullYear() &&
+               d.getMonth() === now.getMonth() &&
+               d.getDate() === now.getDate();
+      }
+
+      function updateStats() {
+        const total = records.length;
+        const totalMin = records.reduce((sum, r) => sum + r.minutes, 0);
+        const avg = total > 0 ? Math.round(totalMin / total) : 0;
+        const today = records.filter(r => isToday(r.createdAt)).length;
+
+        totalSessions.textContent = total;
+        totalTime.textContent = totalMin;
+        avgTime.textContent = avg;
+        todayCount.textContent = today;
+      }
+
+      function renderRecords() {
+        const subject = filterSubject.value;
+        const search = searchInput.value.trim().toLowerCase();
+
+        let filtered = records;
+
+        if (subject !== "all") {
+          filtered = filtered.filter(r => r.subject === subject);
+        }
+
+        if (search) {
+          filtered = filtered.filter(r =>
+            r.title.toLowerCase().includes(search) ||
+            (r.note && r.note.toLowerCase().includes(search))
+          );
+        }
+
+        filtered = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        if (filtered.length === 0) {
+          recordList.innerHTML = `
+            <div class="empty-state">
+              <div class="icon">🔍</div>
+              <p>条件に合う記録がありません</p>
+            </div>
+          `;
+          updateStats();
+          return;
+        }
+
+        let html = "";
+        let currentDate = "";
+
+        filtered.forEach((record) => {
+          const dateLabel = formatDateShort(record.createdAt);
+          const showDateHeader = dateLabel !== currentDate;
+          currentDate = dateLabel;
+          const realIndex = records.indexOf(record);
+
+          html += `
+            ${showDateHeader ? `<div style="margin-top:12px;margin-bottom:4px;font-size:0.8rem;opacity:0.4;">📅 ${record.createdAt.split("T")[0]}</div>` : ""}
+            <div class="record-card">
+              <div class="record-left">
+                <div class="record-title">
+                  ${record.title}
+                  <span class="subject-tag ${getSubjectTagClass(record.subject)}">${record.subject}</span>
+                </div>
+                <div class="record-meta">
+                  <span>🕐 ${formatDate(record.createdAt)}</span>
+                  ${record.note ? `<span>💬 ${record.note}</span>` : ""}
+                </div>
+              </div>
+              <div class="record-right">
+                <div class="record-time">${record.minutes}<span class="record-time-unit"> 分</span></div>
+                <div class="record-actions">
+                  <button class="edit-btn" data-index="${realIndex}">✏️</button>
+                  <button class="delete-btn" data-index="${realIndex}">🗑</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        recordList.innerHTML = html;
+
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const index = parseInt(e.target.dataset.index);
+            deleteRecord(index);
+          });
+        });
+
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const index = parseInt(e.target.dataset.index);
+            editRecord(index);
+          });
+        });
+
+        updateStats();
+      }
+
+      function addRecord() {
+        const title = inputTitle.value.trim();
+        const subject = inputSubject.value;
+        const minutes = parseInt(inputMinutes.value);
+        const note = inputNote.value.trim();
+
+        if (!title) {
+          alert("学習内容を入力してください");
+          return;
+        }
+
+        if (!minutes || minutes < 1) {
+          alert("学習時間を入力してください（1分以上）");
+          return;
+        }
+
+        if (minutes > 1440) {
+          alert("学習時間は24時間（1440分）以内で入力してください");
+          return;
+        }
+
+        const record = {
+          id: Date.now(),
+          title: title,
+          subject: subject,
+          minutes: minutes,
+          note: note,
+          createdAt: new Date().toISOString()
+        };
+
+        records.push(record);
+        saveData();
+
+        inputTitle.value = "";
+        inputMinutes.value = "";
+        inputNote.value = "";
+
+        renderRecords();
+      }
+
+      function deleteRecord(index) {
+        if (index < 0 || index >= records.length) return;
+        const record = records[index];
+        if (!confirm(`「${record.title}」(${record.minutes}分) を削除しますか？`)) return;
+        records.splice(index, 1);
+        saveData();
+        renderRecords();
+      }
+
+      function editRecord(index) {
+        if (index < 0 || index >= records.length) return;
+        const record = records[index];
+        inputTitle.value = record.title;
+        inputSubject.value = record.subject;
+        inputMinutes.value = record.minutes;
+        inputNote.value = record.note || "";
+        records.splice(index, 1);
+        saveData();
+        renderRecords();
+        inputTitle.focus();
+        alert("✏️ 修正して「記録する」ボタンを押してください");
+      }
+
+      function deleteAll() {
+        if (records.length === 0) {
+          alert("削除する記録がありません");
+          return;
+        }
+        if (!confirm(`すべての学習記録（${records.length}件）を削除しますか？`)) return;
+        records = [];
+        saveData();
+        renderRecords();
+      }
+
+      function clearForm() {
+        inputTitle.value = "";
+        inputSubject.value = "数学";
+        inputMinutes.value = "";
+        inputNote.value = "";
+        inputTitle.focus();
+      }
+
+      filterSubject.addEventListener("change", renderRecords);
+      searchInput.addEventListener("input", renderRecords);
+      addBtn.addEventListener("click", addRecord);
+      clearFormBtn.addEventListener("click", clearForm);
+      deleteAllBtn.addEventListener("click", deleteAll);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.target.tagName === "INPUT" && !e.shiftKey) {
+          const active = document.activeElement;
+          if (active.id === "inputTitle" || active.id === "inputMinutes") {
+            addRecord();
+          }
+        }
+      });
+
+      loadData();
+      renderRecords();
+    </script>
+  </body>
+</html>
